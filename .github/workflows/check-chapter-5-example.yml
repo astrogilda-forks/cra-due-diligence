@@ -1,7 +1,7 @@
 name: Check the chapter 5 example
 
 # Chapter 5 says a dependent project re-runs a pinned vector release in CI and the build
-# fails when a result changes. This job does exactly that with the release the chapter
+# fails when a result changes. This job does exactly that with a pinned release of the corpus the chapter
 # links, so the example in the text is one that runs.
 
 on:
