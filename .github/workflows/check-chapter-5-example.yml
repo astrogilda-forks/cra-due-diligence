@@ -1,0 +1,30 @@
+name: Check the chapter 5 example
+
+# Chapter 5 says a dependent project re-runs a pinned vector release in CI and the build
+# fails when a result changes. This job does exactly that with the release the chapter
+# links, so the example in the text is one that runs.
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - content/05.md
+      - .github/workflows/check-chapter-5-example.yml
+
+permissions:
+  contents: read
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Replay the pinned vector release
+        run: |
+          pip install uv
+          uvx --python 3.13 agent-evidence-vectors==0.17.5
