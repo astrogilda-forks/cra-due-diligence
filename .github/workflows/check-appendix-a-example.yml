@@ -1,8 +1,8 @@
-name: Check the chapter 5 example
+name: Check the appendix A example
 
-# Chapter 5 gives an example: an integrator runs a pinned release of a project's test vectors
+# Appendix A gives an example: an integrator runs a pinned release of a project's test vectors
 # against the component it ships, and the build fails when a rule is no longer enforced. This
-# job runs that example in two steps. All vectors must pass against the component, and
+# job runs that example in two steps, so the commands and numbers in the appendix stay true. All vectors must pass against the component, and
 # exactly one must fail against a copy of it with one check removed.
 
 on:
@@ -10,8 +10,8 @@ on:
     branches:
       - main
     paths:
-      - content/05.md
-      - .github/workflows/check-chapter-5-example.yml
+      - content/appendix-a.md
+      - .github/workflows/check-appendix-a-example.yml
 
 permissions:
   contents: read
@@ -70,8 +70,11 @@ jobs:
           status=0
           uvx --python 3.13 agent-evidence-vectors=="$VECTORS_VERSION" \
             --verifier "$RUNNER_TEMP/component-one-check-removed -validity-only -json" > removed.txt || status=$?
-          grep -E '^(totals|verifier):|FAIL' removed.txt
+          # Only the status column (the second) is a vector's result; the stage columns after it
+          # are diagnostics and can read FAIL on a passing vector.
           failed=$(awk '$2 == "FAIL" {print $1}' removed.txt)
+          grep -E '^(totals|verifier):' removed.txt
+          echo "Failing vector: ${failed:-none}"
           {
             echo "### Copy with one check removed: exactly one vector must fail"
             echo
