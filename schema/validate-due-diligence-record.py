@@ -43,12 +43,23 @@ def above_low_risk_without_properties(d: dict) -> None:
     del d["properties_checked"]
 
 
-def version_range_for_revision(d: dict) -> None:
-    d["component"]["source_revision"] = "2.x"
+def purl_without_version(d: dict) -> None:
+    d["component"]["purl"] = "pkg:github/example-org/libexample-parser"
 
 
-def package_without_digest(d: dict) -> None:
-    del d["component"]["package"]["digest"]
+def component_without_purl(d: dict) -> None:
+    d["component"] = {
+        "name": "libexample-parser",
+        "upstream_repository": "https://github.com/example-org/libexample-parser",
+    }
+
+
+def product_information_in_record(d: dict) -> None:
+    d["product_release"] = "acme-gateway 5.2.0"
+
+
+def check_without_time(d: dict) -> None:
+    del d["performed"]["at"]
 
 
 def failed_property_without_evidence(d: dict) -> None:
@@ -84,8 +95,10 @@ def tool_without_version(d: dict) -> None:
 NEGATIVES = [
     ("a low-risk component with no reason for the level", low_risk_without_reason),
     ("a component above low risk with no property entries", above_low_risk_without_properties),
-    ("a version range where an exact source revision belongs", version_range_for_revision),
-    ("a built package named without its digest", package_without_digest),
+    ("a PURL with no version", purl_without_version),
+    ("a component identified by name and repository instead of a PURL", component_without_purl),
+    ("product information inside the record", product_information_in_record),
+    ("a check recorded with no date and time", check_without_time),
     ("a failed property with no evidence digest", failed_property_without_evidence),
     ("a failed property with no action taken", failed_property_without_action),
     ("a property judged not applicable with no reason", not_applicable_without_reason),

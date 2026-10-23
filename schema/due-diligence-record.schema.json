@@ -2,10 +2,10 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/orcwg/cra-due-diligence/main/schema/due-diligence-record.schema.json",
   "title": "Due diligence record for an integrated component",
-  "description": "A machine-readable form of the record that chapter 3 of this white paper proposes a manufacturer keeps when it exercises Article 13(5) due diligence on a third-party component. One object per component per product release. The CRA does not enumerate fields for this record, so this schema is a proposal that follows that chapter's table, not a reading of the regulation. Its rules come from the chapter: a record names the exact artefact integrated, every component keeps a final result with its risk level and the reason for it, a component above low risk keeps one entry per property checked, and bulky evidence stays outside the record, named by digest.",
+  "description": "A machine-readable form of the record that chapter 3 of this white paper proposes a manufacturer keeps when it exercises Article 13(5) due diligence on a third-party component. One object per component version. The record holds no product information: one component can be integrated into many products, so each product keeps its own list of the records it relies on. The CRA does not enumerate fields for this record, so this schema is a proposal that follows that chapter's table, not a reading of the regulation. Its rules come from the chapter: a record identifies the component by its PURL with the exact version and states when the check was made, every component keeps a final result with its risk level and the reason for it, a component above low risk keeps one entry per property checked, and bulky evidence stays outside the record, named by digest.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_revision", "component", "product_release", "risk", "final_result", "performed"],
+  "required": ["schema_revision", "component", "risk", "final_result", "performed"],
   "properties": {
     "schema_revision": {
       "description": "The revision of this schema the record was written against.",
@@ -13,11 +13,6 @@
       "pattern": "^[0-9]+\\.[0-9]+$"
     },
     "component": { "$ref": "#/$defs/component" },
-    "product_release": {
-      "description": "The product release the record covers. Due diligence applies to all releases of a product in the product lifecycle, so a record names the one it was made for.",
-      "type": "string",
-      "minLength": 1
-    },
     "risk": {
       "description": "The level of due diligence applied and why. Recital 34 makes the appropriate level depend on the nature and level of cybersecurity risk of the component. The level is itself a finding, so its reason is always recorded, low risk included.",
       "type": "object",
@@ -60,13 +55,13 @@
       "items": { "$ref": "#/$defs/property_entry" }
     },
     "performed": {
-      "description": "Who or what performed the check, when, and the version of any tool used. Two versions of a scanner give two answers about the same component.",
+      "description": "Who or what performed the check, the date and time it was performed, and the version of any tool used. What a check finds describes the project at that moment and can change afterwards, and two versions of a scanner give two answers about the same component.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["by", "on"],
+      "required": ["by", "at"],
       "properties": {
         "by": { "type": "string", "minLength": 1 },
-        "on": { "type": "string", "format": "date" },
+        "at": { "type": "string", "format": "date-time" },
         "tools": {
           "type": "array",
           "items": {
@@ -104,28 +99,15 @@
       }
     },
     "component": {
-      "description": "The component as integrated. Due diligence attaches to the act of integrating, so the record names one revision. A version range such as 2.x covers many releases and cannot be re-checked against the one that shipped.",
+      "description": "The component, identified by its Package URL (PURL, https://github.com/package-url/purl-spec) and nothing else. The PURL carries the exact version, because a version range such as 2.x covers many releases and cannot be re-checked against the one that shipped. Where an artefact digest is wanted, the PURL's checksum qualifier carries it.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["name", "upstream_repository", "source_revision"],
+      "required": ["purl"],
       "properties": {
-        "name": { "type": "string", "minLength": 1 },
-        "upstream_repository": { "type": "string", "format": "uri" },
-        "source_revision": {
-          "description": "A full commit identifier of the upstream repository.",
+        "purl": {
+          "description": "A PURL with a version, for example pkg:github/example-org/libexample-parser@2.4.1.",
           "type": "string",
-          "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$"
-        },
-        "package": {
-          "description": "Present only where the manufacturer integrated a built package rather than the source. A package without its digest identifies no single artefact, so the digest is required.",
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["name", "version", "digest"],
-          "properties": {
-            "name": { "type": "string", "minLength": 1 },
-            "version": { "type": "string", "minLength": 1 },
-            "digest": { "$ref": "#/$defs/digest" }
-          }
+          "pattern": "^pkg:[A-Za-z][A-Za-z0-9.+-]*/[^@?#]+@[^?#]+([?#].*)?$"
         }
       }
     },
@@ -144,13 +126,12 @@
         },
         "checked_on": { "type": "string", "format": "date" },
         "test_run": {
-          "description": "Set for an additional security test the manufacturer ran, whose result only the party running it observed. The inputs and the revision it ran against are recorded so someone else can repeat it.",
+          "description": "Set for an additional security test the manufacturer ran, whose result only the party running it observed. The inputs are recorded so someone else can repeat the test against the component version the record names.",
           "type": "object",
           "additionalProperties": false,
-          "required": ["inputs", "revision"],
+          "required": ["inputs"],
           "properties": {
-            "inputs": { "type": "string", "minLength": 1 },
-            "revision": { "type": "string", "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$" }
+            "inputs": { "type": "string", "minLength": 1 }
           }
         },
         "evidence": { "$ref": "#/$defs/digest" },

@@ -1,19 +1,8 @@
 {
   "schema_revision": "0.1",
   "component": {
-    "name": "libexample-parser",
-    "upstream_repository": "https://github.com/example-org/libexample-parser",
-    "source_revision": "3f2a9c1e5b7d4a60918c2e7f1d0b8a45c6e93d27",
-    "package": {
-      "name": "libexample-parser",
-      "version": "2.4.1",
-      "digest": {
-        "algorithm": "sha256",
-        "value": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
-      }
-    }
+    "purl": "pkg:github/example-org/libexample-parser@2.4.1"
   },
-  "product_release": "acme-gateway 5.2.0",
   "risk": {
     "level": "high",
     "reason": "Parses untrusted network input in a privileged process."
@@ -26,7 +15,7 @@
     {
       "field": "security_contact",
       "value": "security@example.org",
-      "source": "https://github.com/example-org/libexample-parser/blob/3f2a9c1e5b7d4a60918c2e7f1d0b8a45c6e93d27/SECURITY.md",
+      "source": "https://github.com/example-org/libexample-parser/blob/v2.4.1/SECURITY.md",
       "read_on": "2026-10-01"
     }
   ],
@@ -60,8 +49,7 @@
       "source": "manufacturer's fuzzing harness",
       "checked_on": "2026-10-01",
       "test_run": {
-        "inputs": "corpus of 40,000 captured packets, 24 hours",
-        "revision": "3f2a9c1e5b7d4a60918c2e7f1d0b8a45c6e93d27"
+        "inputs": "corpus of 40,000 captured packets, 24 hours"
       },
       "evidence": {
         "algorithm": "sha256",
@@ -71,7 +59,7 @@
   ],
   "performed": {
     "by": "Supply chain security team",
-    "on": "2026-10-01",
+    "at": "2026-10-01T09:30:00Z",
     "tools": [
       { "name": "osv-scanner", "version": "1.9.2" }
     ]
